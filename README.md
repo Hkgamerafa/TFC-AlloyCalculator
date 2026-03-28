@@ -1,4 +1,4 @@
-# TFC-AlloyCalculator
+# [TFC-AlloyCalculator](https://hkgamerafa.github.io/TFC-AlloyCalculator/TFCAlloy_CalculatorV1.0.0.html)
 
 A lightweight, HTML-based alloy calculator for modded **TerraFirmaCraft (TFC)** Minecraft. Specifically ones that use **TFC Ore Washing** (e.g., HTFC3). This tool is designed to help players efficiently test, plan, and visualize alloy combinations, whether for experimentation or practical gameplay use.
 
@@ -19,7 +19,7 @@ A lightweight, HTML-based alloy calculator for modded **TerraFirmaCraft (TFC)** 
   Automatically completes the rest of the required components once a valid starting entry is provided.
 
 - **Alloy Ratio Slider**  
-  Dynamically adjust the volume of one or more components in accordance with the alloy’s percentage range.
+  Dynamically adjust the volume of one or more components in accordance with the alloy’s percentage range and round it to the nearest integer ore amount.
 
 ## Beta Disclaimer
 
