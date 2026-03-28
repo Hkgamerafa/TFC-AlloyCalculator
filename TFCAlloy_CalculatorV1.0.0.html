@@ -1221,7 +1221,7 @@
     function producesIntegerOres(components, total) {
       return components.every(comp => {
         const mb = (comp.percent / 100) * total;
-        return Math.abs(mb - Math.round(mb)) < 1e-6;
+        return Math.abs((mb / 5) - Math.round(mb / 5)) < 1e-6;
       });
     }
 
