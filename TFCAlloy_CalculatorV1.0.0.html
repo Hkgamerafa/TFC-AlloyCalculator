@@ -654,7 +654,7 @@
             <input type="range" class="ratio-slider" min="0" max="100" value="50" id="alloyRatioSlider" oninput="updateAlloyRatio()">
             <span class="ratio-label" id="alloyRatioLabel">50/50</span>
           </div>
-          <button onclick="resetRatio()">Reset Ratio</button>
+          <button onclick="roundRatio()">Round Ratio</button>
         </div>
         <div class="result" id="oreResult"></div>
       </div>
@@ -1160,10 +1160,18 @@
       calculateOres(true); // Pass true to disable animation
     }
 
-    function resetRatio() {
+    function roundRatio() {
       const slider = document.getElementById('alloyRatioSlider');
-      slider.value = 50;
-      updateAlloyRatio(); // Reset ratio and update calculations
+      const alloy = document.getElementById('alloyType').value;
+      const total = parseVolume(document.getElementById('alloyAmount').value);
+
+      const current = Number(slider.value);
+
+      const best = findNearestValidSliderValue(current, alloy, total);
+
+      slider.value = best;
+
+      updateAlloyRatio(); // Round ratio and update calculations
     }
 
     function calculateOres(disableAnimation = false) {
@@ -1178,69 +1186,7 @@
 
       let components = [];
 
-      switch (alloy) {
-        case 'Bronze':
-          components = [
-            { name: '[Cu] Copper', percent: (88 + (92 - 88) * (ratio / 100)) },
-            { name: '[Sn] Tin', percent: (12 - (92 - 88) * (ratio / 100)) },
-          ];
-          break;
-        case 'Bismuth Bronze':
-          components = [
-            { name: '[Cu] Copper', percent: (50 + (65 - 50) * (ratio / 100)) },
-            { name: '[Zn] Zinc', percent: (20 + (30 - 20) * (ratio / 100)) },
-            { name: '[Bi] Bismuth', percent: (10 + (20 - 10) * (ratio / 100)) }
-          ];
-          break;
-        case 'Black Bronze':
-          components = [
-            { name: '[Cu] Copper', percent: (50 + (70 - 50) * (ratio / 100)) },
-            { name: '[Au] Gold', percent: ((100 - (50 + (70 - 50) * (ratio / 100))) / 2) },
-            { name: '[Ag] Silver', percent: ((100 - (50 + (70 - 50) * (ratio / 100))) / 2) },
-          ];
-          break;
-        case 'Brass':
-          components = [
-            { name: '[Cu] Copper', percent: (88 + (92 - 88) * (ratio / 100)) },
-            { name: '[Zn] Zinc', percent: (12 - (92 - 88) * (ratio / 100)) },
-          ];
-          break;
-        case 'Rose Gold':
-          components = [
-            { name: '[Cu] Copper', percent: (15 + (30 - 15) * (ratio / 100)) },
-            { name: '[Au] Gold', percent: (85 - (30 - 15) * (ratio / 100)) },
-          ];
-          break;
-        case 'Sterling Silver':
-          components = [
-            { name: '[Ag] Silver', percent: (60 + (80 - 60) * (ratio / 100)) },
-            { name: '[Cu] Copper', percent: (40 - (80 - 60) * (ratio / 100)) },
-          ];
-          break;
-        case 'Weak Black Steel':
-          components = [
-            { name: '[St] Steel', percent: (50 + (70 - 50) * (ratio / 100)) },
-            { name: '[Ni] Nickel', percent: ((100 - (50 + (70 - 50) * (ratio / 100))) / 2) },
-            { name: '[CuAuAg] Black Bronze', percent: ((100 - (50 + (70 - 50) * (ratio / 100))) / 2) },
-          ];
-          break;
-        case 'Weak Blue Steel':
-          components = [
-            { name: '[StNiBB] Black Steel', percent: (50 + (55 - 50) * (ratio / 100)) },
-            { name: '[CuBiSn] Bismuth Bronze', percent: (10 + (15 - 10) * (ratio / 100)) },
-            { name: '[CuAg] Sterling Silver', percent: (10 + (15 - 10) * (ratio / 100)) },
-            { name: '[St] Steel', percent: (20 + (25 - 20) * (ratio / 100)) }
-          ];
-          break;
-        case 'Weak Red Steel':
-          components = [
-            { name: '[StNiBB] Black Steel', percent: (50 + (55 - 50) * (ratio / 100)) },
-            { name: '[CuAu] Rose Gold', percent: (10 + (15 - 10) * (ratio / 100)) },
-            { name: '[CuZn] Brass', percent: (10 + (15 - 10) * (ratio / 100)) },
-            { name: '[St] Steel', percent: (20 + (25 - 20) * (ratio / 100)) }
-          ];
-          break;
-      }
+      components = getComponents(alloy, ratio);
 
       components.forEach(comp => {
         const mb = ((comp.percent / 100) * total).toFixed(2);
@@ -1249,6 +1195,91 @@
 
       updateResults(resultText, 'oreResult');
       updateAlloyChart(components); // Update chart with optional animation control
+    }
+
+
+    function findNearestValidSliderValue(currentSlider, alloy, total) {
+      let best = currentSlider;
+      let smallestDiff = Infinity;
+
+      for (let r = 0; r <= 100; r++) {
+        const components = getComponents(alloy, r);
+
+        if (producesIntegerOres(components, total)) {
+          const diff = Math.abs(r - currentSlider);
+
+          if (diff < smallestDiff) {
+            smallestDiff = diff;
+            best = r;
+          }
+        }
+      }
+
+      return best;
+    }
+
+    function producesIntegerOres(components, total) {
+      return components.every(comp => {
+        const mb = (comp.percent / 100) * total;
+        return Math.abs(mb - Math.round(mb)) < 1e-6;
+      });
+    }
+
+    function getComponents(alloy, ratio) {
+      switch (alloy) {
+        case 'Bronze':
+          return [
+            { name: '[Cu] Copper', percent: (88 + (92 - 88) * (ratio / 100)) },
+            { name: '[Sn] Tin', percent: (12 - (92 - 88) * (ratio / 100)) },
+          ];
+        case 'Bismuth Bronze':
+          return [
+            { name: '[Cu] Copper', percent: (50 + (65 - 50) * (ratio / 100)) },
+            { name: '[Zn] Zinc', percent: (20 + (30 - 20) * (ratio / 100)) },
+            { name: '[Bi] Bismuth', percent: (10 + (20 - 10) * (ratio / 100)) }
+          ];
+        case 'Black Bronze':
+          return [
+            { name: '[Cu] Copper', percent: (50 + (70 - 50) * (ratio / 100)) },
+            { name: '[Au] Gold', percent: ((100 - (50 + (70 - 50) * (ratio / 100))) / 2) },
+            { name: '[Ag] Silver', percent: ((100 - (50 + (70 - 50) * (ratio / 100))) / 2) },
+          ];
+        case 'Brass':
+          return [
+            { name: '[Cu] Copper', percent: (88 + (92 - 88) * (ratio / 100)) },
+            { name: '[Zn] Zinc', percent: (12 - (92 - 88) * (ratio / 100)) },
+          ];
+        case 'Rose Gold':
+          return [
+            { name: '[Cu] Copper', percent: (15 + (30 - 15) * (ratio / 100)) },
+            { name: '[Au] Gold', percent: (85 - (30 - 15) * (ratio / 100)) },
+          ];
+        case 'Sterling Silver':
+          return [
+            { name: '[Ag] Silver', percent: (60 + (80 - 60) * (ratio / 100)) },
+            { name: '[Cu] Copper', percent: (40 - (80 - 60) * (ratio / 100)) },
+          ];
+        case 'Weak Black Steel':
+          return [
+            { name: '[St] Steel', percent: (50 + (70 - 50) * (ratio / 100)) },
+            { name: '[Ni] Nickel', percent: ((100 - (50 + (70 - 50) * (ratio / 100))) / 2) },
+            { name: '[CuAuAg] Black Bronze', percent: ((100 - (50 + (70 - 50) * (ratio / 100))) / 2) },
+          ];
+        case 'Weak Blue Steel':
+          return [
+            { name: '[StNiBB] Black Steel', percent: (50 + (55 - 50) * (ratio / 100)) },
+            { name: '[CuBiSn] Bismuth Bronze', percent: (10 + (15 - 10) * (ratio / 100)) },
+            { name: '[CuAg] Sterling Silver', percent: (10 + (15 - 10) * (ratio / 100)) },
+            { name: '[St] Steel', percent: (20 + (25 - 20) * (ratio / 100)) }
+          ];
+        case 'Weak Red Steel':
+          return [
+            { name: '[StNiBB] Black Steel', percent: (50 + (55 - 50) * (ratio / 100)) },
+            { name: '[CuAu] Rose Gold', percent: (10 + (15 - 10) * (ratio / 100)) },
+            { name: '[CuZn] Brass', percent: (10 + (15 - 10) * (ratio / 100)) },
+            { name: '[St] Steel', percent: (20 + (25 - 20) * (ratio / 100)) }
+          ];
+      }
     }
 
     function formatComponentResult(comp, mb) {
