@@ -1093,10 +1093,10 @@
       const RG = comp['Rose Gold'] || 0;
       const SS = comp['Sterling Silver'] || 0;
 
-      if (Cu >= 88 && Cu <= 92 && Sn >= 8 && Sn <= 12 && Object.keys(comp).length === 2) return 'Bronze';
+      if (Cu >= 80 && Cu <= 92 && Sn >= 8 && Sn <= 20 && Object.keys(comp).length === 2) return 'Bronze';
       if (Cu >= 50 && Cu <= 65 && Zn >= 20 && Zn <= 30 && Bi >= 10 && Bi <= 20 && Object.keys(comp).length === 3) return 'Bismuth Bronze';
       if (Cu >= 50 && Cu <= 70 && Au >= 10 && Au <= 25 && Ag >= 10 && Ag <= 25 && Object.keys(comp).length === 3) return 'Black Bronze';
-      if (Cu >= 88 && Cu <= 92 && Zn >= 8 && Zn <= 12 && Object.keys(comp).length === 2) return 'Brass';
+      if (Cu >= 80 && Cu <= 92 && Zn >= 8 && Zn <= 20 && Object.keys(comp).length === 2) return 'Brass';
       if (Cu >= 15 && Cu <= 30 && Au >= 70 && Au <= 85 && Object.keys(comp).length === 2) return 'Rose Gold';
       if (Ag >= 60 && Ag <= 80 && Cu >= 20 && Cu <= 40 && Object.keys(comp).length === 2) return 'Sterling Silver';
       if (St >= 50 && St <= 70 && Ni >= 15 && Ni <= 25 && BB >= 15 && BB <= 25 && Object.keys(comp).length === 3) return 'Weak Black Steel';
