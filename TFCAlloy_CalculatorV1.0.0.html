@@ -1115,7 +1115,7 @@
 
       switch (alloy) {
         case 'Bronze':
-          minRatio = 88; maxRatio = 92;
+          minRatio = 80; maxRatio = 92;
           primaryMetal = '[Cu] Copper'; secondaryMetal = '[Sn] Tin';
           break;
         case 'Bismuth Bronze':
@@ -1127,7 +1127,7 @@
           primaryMetal = '[Cu] Copper'; secondaryMetal = '[Au] Gold + [Ag] Silver';
           break;
         case 'Brass':
-          minRatio = 88; maxRatio = 92;
+          minRatio = 80; maxRatio = 92;
           primaryMetal = '[Cu] Copper'; secondaryMetal = '[Zn] Zinc';
           break;
         case 'Rose Gold':
@@ -1229,8 +1229,8 @@
       switch (alloy) {
         case 'Bronze':
           return [
-            { name: '[Cu] Copper', percent: (88 + (92 - 88) * (ratio / 100)) },
-            { name: '[Sn] Tin', percent: (12 - (92 - 88) * (ratio / 100)) },
+            { name: '[Cu] Copper', percent: (80 + (92 - 80) * (ratio / 100)) },
+            { name: '[Sn] Tin', percent: (20 - (92 - 80) * (ratio / 100)) },
           ];
         case 'Bismuth Bronze':
           return [
@@ -1246,8 +1246,8 @@
           ];
         case 'Brass':
           return [
-            { name: '[Cu] Copper', percent: (88 + (92 - 88) * (ratio / 100)) },
-            { name: '[Zn] Zinc', percent: (12 - (92 - 88) * (ratio / 100)) },
+            { name: '[Cu] Copper', percent: (80 + (92 - 80) * (ratio / 100)) },
+            { name: '[Zn] Zinc', percent: (20 - (92 - 80) * (ratio / 100)) },
           ];
         case 'Rose Gold':
           return [
